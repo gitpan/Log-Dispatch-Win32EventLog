@@ -6,9 +6,9 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.12';
+$VERSION = '0.13';
 
-$VERSION = eval $VERSION;
+# $VERSION = eval $VERSION;
 
 use Log::Dispatch 2.01;
 use base qw(Log::Dispatch::Output);
@@ -210,8 +210,8 @@ administrator:
 afterwards the source name should be properly registered, and any
 script with rights to post to the event logs should be able to post.
 
-I<This is an experimental feature that may not work properly on all
-systems.>
+I<This is an experimental feature.> See the L</KNOWN ISSUES>
+section for more information.
 
 =item log_message
 
@@ -245,6 +245,18 @@ See L<Log::Log4perl::JavaMap::NTEventLogAppender> for more information.
 
 See L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Log-Dispatch-Win32EventLog>
 for an up-to-date list of known issues and bugs.
+
+=head2 Full Event Logs
+
+Depending on event log settings, if they are at their maximum size and
+the automatic purging of older events is disabled, then some of the
+tests may fail.  Clear the event logs and re-test the module.
+
+=head2 Source Registration
+
+Event source registration may fail sporadically.  It may not work when
+a source is registered for the first time, or when the event log has
+been newly cleared.
 
 =head2 IIS and Windows Server 2003
 

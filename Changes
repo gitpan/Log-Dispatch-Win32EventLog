@@ -1,5 +1,13 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
+0.13    Mon Apr  4 2005
+	- commented-out unnecessary eval
+	- added Pod::Coverage and Test::Pod tests
+	- added stub Test::Prereq (disabled due to bugs)
+	- minor updates to documentation
+	- 02-register.t test disabled due to bugs in register
+	- added SIGNATURE to distribution
+
 0.12	Fri Sep  3 2004 (includes 0.11_xx releases)
 	- test for register set as TODO since it seems to fail on some
 	  systems when run for the first few times, then suddenly works

@@ -1,0 +1,39 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.44.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 5ae242c555c1b9951d3dfa714dd4821c8ce40aec Build.PL
+SHA1 36fac29347828d54ad9db85a49802a3b254a94fe Changes
+SHA1 97188ad10530cd0f220bba1fbf291872bfffec6a MANIFEST
+SHA1 29fbe58b6c8d0e0e99dc867e4f42d4d129163e6d META.yml
+SHA1 792193d33ed504e35a137247536ee92d47c4acd9 Makefile.PL
+SHA1 6b29a03194176eb21de8dc597707f9a8d4c2dc62 README
+SHA1 0eff4690b629e0a1f9079de102af75f818941bd6 lib/Log/Dispatch/Win32EventLog.pm
+SHA1 068375dc7c271cd308bfadb18a4a8c84c4514134 t/01-basic.t
+SHA1 2b01e88172f72ea5adf92627a00bb66a0db94b6f t/02-register.t
+SHA1 ca8bd2b807734eefdb260fe77cf9c8069cdece5c t/03-log4perl-log4j.t
+SHA1 786804ccf1cb8cec5f6731d566796f20fca83b0a t/03-log4perl.t
+SHA1 aa908d80989ae1a9ff9c181d5e89ce37a47ad1e5 t/04-invalid_log.t
+SHA1 1284970b914040455477cb9b4053b3883ad36838 t/05-backslashes.t
+SHA1 0a820175ae4b47a63cafcf1921115445c1e8a8ec t/06-pod-coverage.t
+SHA1 5fa10b271f957b935d0d1fe1ded16acda7af6fe9 t/06-pod.t
+SHA1 cfe16b9b74e45eace5b3d98afc95c159653d2c77 t/06-prereqs.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.5 (MingW32)
+
+iD8DBQFCUIF6V485gMKcmRARAm5UAKDaCXDlQnQ8m4mh3O3WLbLsUbNubQCgupqI
+2yKMp8ft7+Y4DOGD2ilYHyw=
+=Y27l
+-----END PGP SIGNATURE-----

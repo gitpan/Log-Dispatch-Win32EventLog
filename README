@@ -48,26 +48,21 @@ DESCRIPTION
 
     See the module documentation for more details.
 
-REVISION HISTORY
-    Changes since v0.11:
+KNOWN ISSUES
+    Depending on event log settings, if they are at their maximum size and
+    the automatic purging of older events is disabled, then some of the
+    tests may fail.  Clear the event logs and re-test the module.
 
-    0.12 Fri Sep  3 2004 (includes 0.11_xx releases)
-	- test for register set as TODO since it seems to fail on some
-	  systems when run for the first few times, then suddenly works
-	- test for register skipped if not an administrator
-	- added test for log4j.NTEventLogAppender interface
-	- if backslashes are in the source, it changes them to spaces and
-	  issues a warning rather than dying; message changed to
-	  'Backslashes in source removed'
-	- tweaked tests with respect to opening event log to verify events
-	- removed use of Win32::IsAdminUser function, since it does
-	  not seem to be universally available
-	- added warning in README about WinZip
-	- event source will only be registered if one is an admin user
-	- removed unnecessary tests
-	- updated POD and added Known Issues section
-	- corrected tests for registered sources (thanks to
-          <fpchan at aol.com> for feedback on this)
+REVISION HISTORY
+    Changes since the last public release:
+
+    0.13    Mon Apr  4 2005
+	- commented-out unnecessary eval
+	- added Pod::Coverage and Test::Pod tests
+	- added stub Test::Prereq (disabled due to bugs)
+	- minor updates to documentation
+	- 02-register.t test disabled due to bugs in register
+	- added SIGNATURE to distribution
 
     A more detailed history can be found in the included Changes file.
 

@@ -4,6 +4,7 @@ MANIFEST
 Makefile.PL
 META.yml
 README
+SIGNATURE
 lib/Log/Dispatch/Win32EventLog.pm
 t/01-basic.t
 t/02-register.t
@@ -11,3 +12,7 @@ t/03-log4perl.t
 t/03-log4perl-log4j.t
 t/04-invalid_log.t
 t/05-backslashes.t
+t/06-pod-coverage.t
+t/06-pod.t
+t/06-prereqs.t
+SIGNATURE    Added here by Module::Build

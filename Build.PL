@@ -26,6 +26,9 @@ my $build = Module::Build->new
        'Log::Log4perl'            => 0.28,
        'Win32'                    => 0.23,
        'Win32::EventLog::Message' => 0,
+       'Pod::Coverage'            => 0,    # for tests
+       'Test::Pod'                => 1.00, # for tests
+       'Test::Prereq'             => 0,    # for tests
      },
      build_requires => {
        'Test::More'               => 0,
@@ -33,6 +36,7 @@ my $build = Module::Build->new
      },
      create_makefile_pl => 'traditional',
      dist_author        => 'Robert Rothenberg <rrwo at cpan.org>, Arthur Bergman <abergman at cpan.org> and Gunnar Hansson <gunnar at telefonplan.nu>',
+     sign               => 1,
 );
 
 $build->create_build_script;
