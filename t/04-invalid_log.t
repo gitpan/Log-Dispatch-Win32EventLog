@@ -15,6 +15,12 @@ BEGIN {
   use_ok('Log::Dispatch::Win32EventLog');
 }
 
+my $is_admin = 0;
+
+eval {
+  $is_admin = Win32::IsAdminUser() || die "Not an administrator";
+};
+
 eval {
   require Win32::EventLog::Message;
   import Win32::EventLog::Message;
@@ -23,6 +29,8 @@ eval {
 my $has_it = ($@) ? 0 : 1;
 
 SKIP: {
+  skip "User is not an administrator",
+    2 unless ($is_admin);
 
   skip "Win32::EventLog::Message not found", 2
     unless ($has_it);

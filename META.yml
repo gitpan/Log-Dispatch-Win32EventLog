@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Log-Dispatch-Win32EventLog
-version: 0.11_05
+version: 0.11_06
 author:
   - ! >-
     Robert Rothenberg <rrwo at cpan.org>, Arthur Bergman <abergman at cpan.org>
@@ -16,6 +16,7 @@ requires:
   perl: 5.005
 recommends:
   Log::Log4perl: 0.28
+  Win32: 0.23
   Win32::EventLog::Message: 0
 build_requires:
   Test::More: 0
@@ -23,5 +24,5 @@ build_requires:
 provides:
   Log::Dispatch::Win32EventLog:
     file: lib/Log/Dispatch/Win32EventLog.pm
-    version: 0.11_05
+    version: 0.11_06
 generated_by: Module::Build version 0.25_02

@@ -49,6 +49,13 @@ sub get_last_event {
 }
 
 
+my $is_admin = 0;
+
+eval {
+  $is_admin = Win32::IsAdminUser() || die "Not an administrator";
+};
+
+
 eval {
   require Win32::EventLog::Message;
   import Win32::EventLog::Message;
@@ -57,9 +64,11 @@ eval {
 my $has_it = ($@) ? 0 : 1;
 
 SKIP: {
+  skip "User is not an administrator",
+    3+(6*NUM_ROUNDS) unless ($is_admin);
 
-  skip "Win32::EventLog::Message not found", 3+(6*NUM_ROUNDS)
-    unless ($has_it);
+  skip "Module Win32::EventLog::Message not found",
+    3+(6*NUM_ROUNDS) unless ($has_it);
 
 #   skip "not logged in as an administration", 3+(6*NUM_ROUNDS)
 #     unless (Win32::IsAdminUser());

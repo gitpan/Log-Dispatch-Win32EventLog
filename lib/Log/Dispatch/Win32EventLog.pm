@@ -6,7 +6,7 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.11_05';
+$VERSION = '0.11_06';
 
 $VERSION = eval $VERSION;
 
@@ -254,6 +254,13 @@ log(s).
 
 See Microsoft KnowledgeBase Article 323076 at
 L<http://support.microsoft.com/default.aspx?scid=kb;en-us;323076>.
+
+=head2 Older versions of Win32.pm
+
+Earlier versions of L<Win32> do not have a function called C<IsAdminUser>.
+Tests which require the user to be an administrator will be skipped, with
+a message saying that the "User is not an administrator" (even when the
+user is an administrator).
 
 =head1 SEE ALSO
 

@@ -1,6 +1,7 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
 0.12
+	- test for register skipped if not an administrator
 	- added test for log4j.NTEventLogAppender interface
 	- if backslashes are in the source, it changes them to spaces and
 	  issues a warning rather than dying; message changed to
