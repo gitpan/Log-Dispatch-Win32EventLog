@@ -8,6 +8,7 @@ WriteMakefile
                            'Log::Dispatch' => '2.01',
                            'Params::Validate' => '0',
                            'Test::More' => '0',
+                           'Test::Warn' => '0',
                            'Win32' => '0',
                            'Win32::EventLog' => '0',
                            'base' => '0'

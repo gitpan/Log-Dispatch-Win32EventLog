@@ -41,7 +41,7 @@ sub get_last_event {
       EVENTLOG_SEQUENTIAL_READ(), 0, $event)) {
     return $event;
   } else {
-    print "\x23 WARNING: Unable to read event log";
+    print "\x23 WARNING: Unable to read event log\n";
     return;
   }
 }
@@ -105,8 +105,8 @@ foreach my $tag (1..NUM_ROUNDS) {
 	my $key = "$1,$2,$3";
 	ok(delete $Events{$key});
       }
-
     }
+
   }
   ok( (keys %Events) == 0 );
 }

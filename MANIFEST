@@ -5,6 +5,7 @@ Makefile.PL
 META.yml
 README
 lib/Log/Dispatch/Win32EventLog.pm
-t/00_simple.t
-t/01_register.t
-t/02_log4perl.t
+t/01-basic.t
+t/02-register.t
+t/03-log4perl.t
+t/04-invalid_log.t

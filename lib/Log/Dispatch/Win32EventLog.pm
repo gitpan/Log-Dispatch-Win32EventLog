@@ -6,9 +6,9 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.03_02';
+$VERSION = '0.10';
 
-$VERSION = eval $VERSION;
+# $VERSION = eval $VERSION;
 
 use Log::Dispatch 2.01;
 use base qw(Log::Dispatch::Output);
@@ -55,7 +55,7 @@ sub new {
 	}
       };
       if ($@) {
-	warn "Unable to register source to log $params{register}";
+	warn "Unable to register source to log $params{register}: $@";
       }
     }
 

@@ -47,7 +47,17 @@ DESCRIPTION
 REVISION HISTORY
     Changes since v0.02:
 
-    0.03_01 Mon Jul 26 2004
+    0.10 Wed Aug  4 2004
+	- build uses Test::Warn
+	- added test for invalid log registration
+	- renamed test files
+	- added tests for registration and Log4perl (if present)
+	- allows registration of the source to a specific log
+	- tests verify that events were written to logs
+	- tests use Test::More
+	- event log is opened to $Source rather than "Application"
+	- checks for proper perl version
+	- handle is now closed when class is destroyed
 	- fixed warnings related to Perl 5.8.x [cpan #7020]
 	- check for invalid characters in source
 	- reorganized and updated POD

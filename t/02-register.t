@@ -4,8 +4,6 @@ use strict;
 
 use constant NUM_ROUNDS => 2;
 
-
-
 use Test::More tests => 8 + (6*NUM_ROUNDS);
 
 BEGIN {
@@ -68,6 +66,13 @@ SKIP: {
     source => 'Win32EventLog RegSrc Test', register => 'System',
     min_level => 0, max_level => 7, name => 'test'
   ));
+
+#   # Sometimes when we first run this on a system, registration will
+#   # fail. If so, just skip the tests with a warning.
+# 
+#   my $config = { };
+#   skip "Registration failed", 2+(6*NUM_ROUNDS)
+#     unless (GetSource('System', 'Win32EventLog RegSrc Test', $config));
 
   open_log();
 
