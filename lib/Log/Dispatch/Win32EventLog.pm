@@ -1,8 +1,11 @@
 package Log::Dispatch::Win32EventLog;
 
 use strict;
+# use warnings;
 use vars qw($VERSION);
-$VERSION = 0.02;
+$VERSION = '0.03_01';
+
+$VERSION = eval $VERSION;
 
 use Log::Dispatch 2.01;
 use base qw(Log::Dispatch::Output);
@@ -22,7 +25,12 @@ sub new {
     $self->_basic_init(%params);
     
     $self->{"win32_source"} = $params{source};
-    $self->{win32_handle} = Win32::EventLog->new($self->{win32_source}) || die "Could not instaniate the event application";;
+    if ($self->{"win32_source"} =~ /[\\]/) {
+      die "Invalid characters in source";
+    }
+    $self->{win32_handle} = Win32::EventLog->new(
+      "Application", Win32::NodeName
+    ) or die "Could not instaniate the event application";;
 
     return $self;
 }
@@ -41,8 +49,13 @@ sub log_message {
 	$level = EVENTLOG_INFORMATION_TYPE;
     }
     $self->{win32_handle}->Report( {
+	Computer  => Win32::NodeName,
+        EventID   => 0,
+        Category  => 0,
+        Source    => $self->{"win32_source"},
 	EventType => $level,
-	Strings => $params{message} . "\0",
+	Strings   => $params{message} . "\0",
+        Data      => "",
     });
 }
 
@@ -52,7 +65,7 @@ __END__
 
 =head1 NAME
 
-Log::Dispatch::Win32EventLog - Class for logging to the Win32 Eventlog
+Log::Dispatch::Win32EventLog - Class for logging to the Windows NT Event Log
 
 =head1 SYNOPSIS
 
@@ -71,9 +84,9 @@ Log::Dispatch::Win32EventLog - Class for logging to the Win32 Eventlog
 Log::Dispatch::Win32EventLog is a subclass of Log::Dispatch::Output, which
 inserts logging output into the windows event registry.
 
-=head1 METHODS
+=head2 METHODS
 
-=over 4
+=over
 
 =item new
 
@@ -81,13 +94,22 @@ inserts logging output into the windows event registry.
 
 This method takes a hash of parameters. The following options are valid:
 
-=item -- name, min_level, max_level, callbacks
+=item name
+
+=item min_level
+
+=item max_level
+
+=item callbacks
 
 Same as various Log::Dispatch::* classes.
 
-=item -- source
+=item source
 
-This will be the source that the event is recorded from.
+This will be the source that the event is recorded from.  Usually this
+is the name of your application.
+
+The source should not contain any backslash characters.
 
 =item log_message
 
@@ -95,17 +117,40 @@ inherited from Log::Dispatch::Output.
 
 =back
 
-=head1 AUTHOR
+=head1 OTHER TOPICS
 
-Arthur Bergman E<lt>abergman@cpan.orgE<gt>
+=head1 Using with Log4perl
 
-Gunnar Hansson E<lt>gunnar@telefonplan.nuE<gt>
+This module can be used as a L<Log::Log4perl> appender.  The
+configuration file should have the following:
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+  log4perl.appender.EventLog         = Log::Dispatch::Win32EventLog
+  log4perl.appender.EventLog.layout  = Log::Log4perl::Layout::SimpleLayout
+  log4perl.appender.EventLog.source  = MySourceName
+  log4perl.appender.EventLog.Threshold = INFO
+
+Replace MySourceName with the source name of your application.
 
 =head1 SEE ALSO
 
-L<Log::Dispatch>, L<Win32::EventLog>
+L<Log::Dispatch>, L<Win32::EventLog>, L<Log::Log4perl>
+
+=head2 Related Modules
+
+L<Win32::EventLog::Carp> traps warn and die signals and sends them to
+the NT event log.
+
+=head1 AUTHOR
+
+Robert Rothenberg E<lt>rrwo at cpan.orgE<gt>
+
+Arthur Bergman E<lt>abergman at cpan.orgE<gt>
+
+Gunnar Hansson E<lt>gunnar at telefonplan.nuE<gt>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

@@ -1,5 +1,12 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
+0.03_01 Mon Jul 26 2004
+	- fixed warnings related to Perl 5.8.x [cpan #7020]
+	- check for invalid characters in source
+	- reorganized and updated POD
+	- added Build.PL and META.yml to distribution
+	- corrected prereqs in Build.PL/Makefile.PL
+
 0.02  Thu Aug 22 09:29:46 CEST 2002
 	- Renamed to Win32EventLog from Win32Event
         - Fixed typos in documentation

@@ -1,5 +1,31 @@
 NAME
-    Log::Dispatch::Win32EventLog - Class for logging to the Win32 Eventlog
+    Log::Dispatch::Win32EventLog - Class for logging to the Windows NT
+    Event Log
+
+REQUIREMENTS
+    The following modules are required:
+
+      Log::Dispatch
+      Params::Validate
+      Win32::EventLog
+
+  Installation
+
+    Installation is pretty standard:
+
+      perl Makefile.PL
+      nmake
+      nmake test
+      nmake install
+
+    If you have Module::Build installed, you can use the following:
+
+      perl Build.PL
+      perl Build
+      perl Build test
+      perl Build install
+
+    Note that the tests for this module will post to the event log!
 
 SYNOPSIS
       use Log::Dispatch::Win32EventLog;
@@ -16,30 +42,28 @@ DESCRIPTION
     Log::Dispatch::Win32EventLog is a subclass of Log::Dispatch::Output,
     which inserts logging output into the windows event registry.
 
-METHODS
-    new
-          $log = Log::Dispatch::Win32EventLog->new(%params);
+    See the module documentation for more details.
 
-        This method takes a hash of parameters. The following options are
-        valid:
+REVISION HISTORY
+    Changes since v0.02:
 
-    -- name, min_level, max_level, callbacks
-        Same as various Log::Dispatch::* classes.
+    0.03_01 Mon Jul 26 2004
+	- fixed warnings related to Perl 5.8.x [cpan #7020]
+	- check for invalid characters in source
+	- reorganized and updated POD
+	- added Build.PL and META.yml to distribution
+	- corrected prereqs in Build.PL/Makefile.PL
 
-    -- source
-        This will be the source that the event is recorded from.
-
-    log_message
-        inherited from Log::Dispatch::Output.
+    A more detailed history can be found in the included Changes file.
 
 AUTHOR
-    Arthur Bergman <abergman@cpan.org>
+    Robert Rothenberg <rrwo at cpan.org>
 
-    Gunnar Hansson <gunnar@telefonplan.nu>
+    Arthur Bergman <abergman at cpan.org>
 
+    Gunnar Hansson <gunnar at telefonplan.nu>
+
+LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
-
-SEE ALSO
-    the Log::Dispatch manpage, the Win32::EventLog manpage
 

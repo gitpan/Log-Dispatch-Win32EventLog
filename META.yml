@@ -1,0 +1,20 @@
+--- #YAML:1.0
+name: Log-Dispatch-Win32EventLog
+version: 0.03_01
+author:
+  - ! >-
+    Robert Rothenberg <rrwo at cpan.org>, Arthur Bergman <abergman at cpan.org>
+    and Gunnar Hansson <gunnar at telefonplan.nu>
+abstract: Class for logging to the Windows NT Event Log
+license: perl
+requires:
+  Log::Dispatch: 2.01
+  Params::Validate: 0
+  Win32: 0
+  Win32::EventLog: 0
+  base: 0
+provides:
+  Log::Dispatch::Win32EventLog:
+    file: lib/Log/Dispatch/Win32EventLog.pm
+    version: 0.03_01
+generated_by: Module::Build version 0.25_02
