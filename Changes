@@ -1,6 +1,8 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
-0.12
+0.12	Fri Sep  3 2004 (includes 0.11_xx releases)
+	- test for register set as TODO since it seems to fail on some
+	  systems when run for the first few times, then suddenly works
 	- test for register skipped if not an administrator
 	- added test for log4j.NTEventLogAppender interface
 	- if backslashes are in the source, it changes them to spaces and

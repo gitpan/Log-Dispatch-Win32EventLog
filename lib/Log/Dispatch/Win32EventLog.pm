@@ -6,7 +6,7 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.11_07';
+$VERSION = '0.12';
 
 $VERSION = eval $VERSION;
 
@@ -278,6 +278,11 @@ Robert Rothenberg E<lt>rrwo at cpan.orgE<gt>
 Arthur Bergman E<lt>abergman at cpan.orgE<gt>
 
 Gunnar Hansson E<lt>gunnar at telefonplan.nuE<gt>
+
+=head2 Acknowledgements
+
+Much thanks to Frank Chan E<lt>fpchan at aol.comE<gt> for testing
+several developer releases of this module.
 
 =head1 LICENSE
 
