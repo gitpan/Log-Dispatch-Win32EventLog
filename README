@@ -47,6 +47,9 @@ DESCRIPTION
 REVISION HISTORY
     Changes since v0.02:
 
+    0.11 Fri Aug  6 2004
+	- corrected handling of unregistered sources
+
     0.10 Wed Aug  4 2004
 	- build uses Test::Warn
 	- added test for invalid log registration

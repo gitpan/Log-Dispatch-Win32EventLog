@@ -6,7 +6,7 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 # $VERSION = eval $VERSION;
 
@@ -31,6 +31,8 @@ sub new {
     $self->_basic_init(%params);
     
     $self->{win32_source} = $params{source};
+    $self->{win32_log}    = "Application";
+
     if ($self->{win32_source} =~ /[\\]/) {
       die "Invalid characters in source";
     }
@@ -49,6 +51,7 @@ sub new {
             $params{register}, $params{source}
           );
 	  $self->{win32_register} = $params{register};
+	  $self->{win32_log}      = $params{source};
 	}
 	else {
 	  die "Invalid log";	  
@@ -60,7 +63,7 @@ sub new {
     }
 
     $self->{win32_handle} = Win32::EventLog->new(
-      $self->{win32_source}, Win32::NodeName
+      $self->{win32_log}, Win32::NodeName
     ) or die "Could not instaniate the event application";;
 
     return $self;
