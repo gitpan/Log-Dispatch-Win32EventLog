@@ -6,7 +6,7 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.11_06';
+$VERSION = '0.11_07';
 
 $VERSION = eval $VERSION;
 

@@ -6,7 +6,7 @@ use constant NUM_ROUNDS => 2;
 
 use Test::More tests => 7 + (6*NUM_ROUNDS);
 
-use Win32 0.23;
+use Win32;
 
 BEGIN {
 #  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
