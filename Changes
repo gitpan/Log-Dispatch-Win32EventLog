@@ -1,5 +1,13 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
+0.12
+	- registration tests will be skipped if you are not
+	  logged in as an administrator
+	- registration will fail is user is not an admin user
+	- updated POD and added Known Issues section
+	- corrected tests for registered sources (thanks to
+          <fpchan at aol.com> for feedback on this)
+
 0.11    Fri Aug  6 2004
 	- corrected handling of unregistered sources
 

@@ -6,6 +6,8 @@ use constant NUM_ROUNDS => 2;
 
 use Test::More tests => 8 + (6*NUM_ROUNDS);
 
+use Win32 ();
+
 BEGIN {
   ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
 
@@ -20,7 +22,7 @@ ok($Win32::EventLog::GetMessageText = 1,
 my $hnd;
 
 sub open_log {
-  $hnd = new Win32::EventLog("Win32EventLog RegSrc Test", Win32::NodeName);
+  $hnd = new Win32::EventLog("System", Win32::NodeName);
 }
 
 sub close_log {
@@ -58,6 +60,9 @@ SKIP: {
 
   skip "Win32::EventLog::Message not found", 3+(6*NUM_ROUNDS)
     unless ($has_it);
+
+  skip "not logged in as an administration", 3+(6*NUM_ROUNDS)
+    unless (Win32::IsAdminUser());
   
   my $dispatch = Log::Dispatch->new;
   ok( defined $dispatch, "new Log::Dispatch" );

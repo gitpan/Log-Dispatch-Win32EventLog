@@ -5,6 +5,8 @@ use strict;
 use Test::More tests => 6;
 use Test::Warn;
 
+use Win32;
+
 BEGIN {
   ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
 
@@ -24,6 +26,9 @@ SKIP: {
 
   skip "Win32::EventLog::Message not found", 2
     unless ($has_it);
+
+  skip "not logged in as an administration", 2
+    unless (Win32::IsAdminUser());
 
   my $dispatch = Log::Dispatch->new;
   ok( defined $dispatch, "new Log::Dispatch" );

@@ -6,13 +6,14 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.11';
+$VERSION = '0.11_02';
 
-# $VERSION = eval $VERSION;
+$VERSION = eval $VERSION;
 
 use Log::Dispatch 2.01;
 use base qw(Log::Dispatch::Output);
 
+use Win32 ();
 use Win32::EventLog;
 
 use Params::Validate qw(validate SCALAR);
@@ -38,6 +39,10 @@ sub new {
     }
 
     if ($params{register}) {
+      unless (Win32::IsAdminUser) {
+	die "Admin user is required to register event sources";
+      }
+
       eval {
 	require Win32::EventLog::Message;
 	import Win32::EventLog::Message;
@@ -163,9 +168,9 @@ The source should not contain any backslash characters.
 
 =item register
 
-This specifies which event log to register the source with, if you
-want to register your source, or to post to a log other than the
-Application log.
+Registration of an event source removes the warning about the event
+being from an unknown source.  It also allows you to post to a log
+other than the Application log.
 
 When you register a source to particular log, all future events will
 be posted to that log, even if you unregister the source and attempt
@@ -179,15 +184,34 @@ will be tagged as "Audit Success" and higher levels will be tagged as
 In order to use this feature, you must have
 L<Win32::EventLog::Message> installed.
 
+The process that registers the event sources may need permission to
+register the event.  In some cases you may first need to run a simple
+script which registers the source name while logged in as an
+administrator:
+
+  use Log::Dispatch;
+  use Log::Dispatch::Win32EventLog 0.10;
+
+  my $dispatch = Log::Dispatch->new;
+  
+  $dispatch->add( Log::Dispatch::Win32EventLog->new(
+    source   => 'MySourceName',
+    register => 'System',
+  );
+
+afterwards the source name should be properly registered, and any
+script with rights to post to the event logs should be able to post.
+
+I<This is an experimental feature that may not work properly on all
+systems.>
+
 =item log_message
 
-inherited from Log::Dispatch::Output.
+inherited from L<Log::Dispatch::Output>.
 
 =back
 
-=head1 OTHER TOPICS
-
-=head1 Using with Log4perl
+=head2 Using with Log4perl
 
 This module can be used as a L<Log::Log4perl> appender.  The
 configuration file should have the following:
@@ -198,6 +222,20 @@ configuration file should have the following:
   log4perl.appender.EventLog.Threshold = INFO
 
 Replace MySourceName with the source name of your application.
+
+=head1 KNOWN ISSUES
+
+See L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Log-Dispatch-Win32EventLog>
+for an up-to-date list of known issues and bugs.
+
+=head2 IIS and Windows Server 2003
+
+In some server configurations using IIS (Windows Server 2003), you may
+need to set security policy to grant permissions to write to the event
+log(s).
+
+See Microsoft KnowledgeBase Article 323076 at
+L<http://support.microsoft.com/default.aspx?scid=kb;en-us;323076>.
 
 =head1 SEE ALSO
 

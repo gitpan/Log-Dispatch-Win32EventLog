@@ -19,7 +19,6 @@ my $build = Module::Build->new
        'Win32'                    => 0,
        'Win32::EventLog'          => 0,
      },
-# requires_os: MSWin32
      recommends => {
        'Log::Log4perl'            => 0,
        'Win32::EventLog::Message' => 0,
