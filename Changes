@@ -1,0 +1,9 @@
+Revision history for Perl extension Log::Dispatch::Win32EventLog.
+
+0.02  Thu Aug 22 09:29:46 CEST 2002
+	- Renamed to Win32EventLog from Win32Event
+        - Fixed typos in documentation
+
+0.01  Wed Aug 21 14:18:40 CEST 2002
+	- First version
+

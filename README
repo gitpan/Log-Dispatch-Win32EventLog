@@ -1,0 +1,45 @@
+NAME
+    Log::Dispatch::Win32EventLog - Class for logging to the Win32 Eventlog
+
+SYNOPSIS
+      use Log::Dispatch::Win32EventLog;
+
+      my $log = Log::Dispatch::Win32EventLog->new(
+          name       => 'myname'
+          min_level  => 'info',
+          source     => 'My App'
+      );
+
+      $log->log(level => 'emergency', messsage => 'something BAD happened');
+
+DESCRIPTION
+    Log::Dispatch::Win32EventLog is a subclass of Log::Dispatch::Output,
+    which inserts logging output into the windows event registry.
+
+METHODS
+    new
+          $log = Log::Dispatch::Win32EventLog->new(%params);
+
+        This method takes a hash of parameters. The following options are
+        valid:
+
+    -- name, min_level, max_level, callbacks
+        Same as various Log::Dispatch::* classes.
+
+    -- source
+        This will be the source that the event is recorded from.
+
+    log_message
+        inherited from Log::Dispatch::Output.
+
+AUTHOR
+    Arthur Bergman <abergman@cpan.org>
+
+    Gunnar Hansson <gunnar@telefonplan.nu>
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    the Log::Dispatch manpage, the Win32::EventLog manpage
+
