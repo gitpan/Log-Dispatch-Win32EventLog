@@ -1,53 +1,115 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
-
-######################### We start with some black magic to print on failure.
-
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
-BEGIN { $| = 1; print "1..3\n"; }
-END {print "not ok 1\n" unless $main::loaded;}
+#-*- mode: perl;-*-
 
 use strict;
-#$^W = 1;
 
-use Log::Dispatch;
+use constant NUM_ROUNDS => 2;
 
-use Log::Dispatch::Win32EventLog;
+use Test::More tests => 8 + (6*NUM_ROUNDS);
 
+BEGIN {
+  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
 
-$main::loaded = 1;
-result($main::loaded);
+  use_ok('Win32::EventLog');
+  use_ok('Log::Dispatch');
+  use_ok('Log::Dispatch::Win32EventLog');
+}
+
+ok($Win32::EventLog::GetMessageText = 1,
+   "Set Win32::EventLog::GetMessageText");
+
+my $hnd;
+
+sub open_log {
+  $hnd = new Win32::EventLog("Application", Win32::NodeName);
+}
+
+sub close_log {
+  if ($hnd) { $hnd->Close; }
+  $hnd = undef;
+}
+
+sub get_number {
+  my $cnt = -1;
+  $hnd->GetNumber($cnt);
+  return $cnt;
+}
+
+sub get_last_event {
+  my $event = { };
+  if ($hnd->Read(
+    EVENTLOG_BACKWARDS_READ() | 
+      EVENTLOG_SEQUENTIAL_READ(), 0, $event)) {
+    return $event;
+  } else {
+    print "\x23 WARNING: Unable to read event log";
+    return;
+  }
+}
 
 my $dispatch = Log::Dispatch->new;
-result( defined $dispatch, "Couldn't create Log::Dispatch object\n" );
+ok( defined $dispatch, "new Log::Dispatch" );
 
-$dispatch->add( Log::Dispatch::Win32EventLog->new(source => 'Win32Event test', min_level => 0, max_level => 7, name => 'test'));
+$dispatch->add( Log::Dispatch::Win32EventLog->new(
+  source => 'Win32EventLog test',
+  min_level => 0, max_level => 7, name => 'test'
+));
 
-$dispatch->log(level => 'emerg', message => "emergency");
-$dispatch->log(level => 'warning', message => "warning");
-$dispatch->log(level =>'info', message => "info");
+open_log();
 
 
-print "ok 3\n";
+my %Events = ( ); # track events that we logged
+my $time   = time();
 
-sub fake_test
+# We run multiple rounds because we want to avoid checking passing the
+# tests based on previous run of this script.  That, combined with
+# using the time to differentiate runs, should make sure that we test
+# for each session.
+
+foreach my $tag (1..NUM_ROUNDS) {
+
+  my $cnt1 = get_number();
+
+  $dispatch->log(level => 'emerg',   message => "emergency,$tag,$time");
+  $Events{"emergency,$tag,$time"} = 1;
+
+  my $cnt2 = get_number();
+  ok( $cnt2 > $cnt1 );
+
+  $dispatch->log(level => 'warning', message => "warning,$tag,$time");
+  $Events{"warning,$tag,$time"} = 1;
+
+  $cnt1 = get_number();
+  ok( $cnt1 > $cnt2 );
+
+  $dispatch->log(level =>'info',     message => "info,$tag,$time");
+  $Events{"info,$tag,$time"} = 1;
+
+  $cnt2 = get_number();
+  ok( $cnt2 > $cnt1 );
+}
+
 {
-    my ($x, $pm) = @_;
+  ok( (keys %Events) == (3*NUM_ROUNDS) );
 
-    warn "Skipping $x test", ($x > 1 ? 's' : ''), " for $pm\n";
-    result($_) foreach 1 .. $x;
+#  require YAML;
+
+  while ((keys %Events) && (my $event = get_last_event())) {
+
+#    print STDERR YAML->Dump($event);
+
+      my $string = $event->{Strings};
+
+    if ( ($string =~ /(\w+)\,(\d+),(\d+)/) &&
+	 ($event->{Source} eq 'Win32EventLog test') ) {
+      if( $3 == $time) {
+	my $key = "$1,$2,$3";
+	ok(delete $Events{$key});
+      }
+
+    }
+  }
+  ok( (keys %Events) == 0 );
 }
 
 
-sub result
-{
-    my $ok = !!shift;
-    use vars qw($TESTNUM);
-    $TESTNUM++;
-    print "not "x!$ok, "ok $TESTNUM\n";
-    print @_ if !$ok;
-}
-
-
+close_log();

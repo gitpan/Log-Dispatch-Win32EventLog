@@ -1,9 +1,12 @@
 package Log::Dispatch::Win32EventLog;
 
+require 5.005;
+
 use strict;
-# use warnings;
+# use warnings; # 5.006 feature
+
 use vars qw($VERSION);
-$VERSION = '0.03_01';
+$VERSION = '0.03_02';
 
 $VERSION = eval $VERSION;
 
@@ -19,17 +22,45 @@ sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
 
-    my %params = validate(@_, { source => SCALAR });
+    my %params = validate(@_, {
+      source   => SCALAR,
+      register => 0,
+    });
 
     my $self = bless {}, $class;
     $self->_basic_init(%params);
     
-    $self->{"win32_source"} = $params{source};
-    if ($self->{"win32_source"} =~ /[\\]/) {
+    $self->{win32_source} = $params{source};
+    if ($self->{win32_source} =~ /[\\]/) {
       die "Invalid characters in source";
     }
+
+    if ($params{register}) {
+      eval {
+	require Win32::EventLog::Message;
+	import Win32::EventLog::Message;
+
+	my @log_list = ( );
+	GetEventLogList( Win32::NodeName, \@log_list );
+	my %log_hash = ( map { $_=>1 } @log_list );
+
+	if (exists $log_hash{$params{register}}) {
+	  Win32::EventLog::Message::RegisterSource(
+            $params{register}, $params{source}
+          );
+	  $self->{win32_register} = $params{register};
+	}
+	else {
+	  die "Invalid log";	  
+	}
+      };
+      if ($@) {
+	warn "Unable to register source to log $params{register}";
+      }
+    }
+
     $self->{win32_handle} = Win32::EventLog->new(
-      "Application", Win32::NodeName
+      $self->{win32_source}, Win32::NodeName
     ) or die "Could not instaniate the event application";;
 
     return $self;
@@ -40,25 +71,41 @@ sub log_message {
     my %params = @_;
 
     my $level = $self->_level_as_number($params{level});
-    
-    if($level > 3) {
-	$level = EVENTLOG_ERROR_TYPE;
-    } elsif($level > 2) {
-	$level = EVENTLOG_WARNING_TYPE;
-    } else {
-	$level = EVENTLOG_INFORMATION_TYPE;
+
+    if (($self->{win32_register}||"") eq 'Security') {
+      if($level > 2) {
+	$level = EVENTLOG_AUDIT_FAILURE;
+      } else {
+	$level = EVENTLOG_AUDIT_SUCCESS;
+      }
     }
+    else {    
+      if($level > 3) {
+	$level = EVENTLOG_ERROR_TYPE;
+      } elsif($level > 2) {
+	$level = EVENTLOG_WARNING_TYPE;
+      } else {
+	$level = EVENTLOG_INFORMATION_TYPE;
+      }
+    }
+
     $self->{win32_handle}->Report( {
 	Computer  => Win32::NodeName,
         EventID   => 0,
         Category  => 0,
-        Source    => $self->{"win32_source"},
+        Source    => $self->{win32_source},
 	EventType => $level,
 	Strings   => $params{message} . "\0",
         Data      => "",
     });
 }
 
+sub DESTROY {
+  my $self = shift;
+  if ($self->{win32_handle}) {
+    $self->{win32_handle}->Close;
+  }
+}
 
 1;
 __END__
@@ -110,6 +157,24 @@ This will be the source that the event is recorded from.  Usually this
 is the name of your application.
 
 The source should not contain any backslash characters.
+
+=item register
+
+This specifies which event log to register the source with, if you
+want to register your source, or to post to a log other than the
+Application log.
+
+When you register a source to particular log, all future events will
+be posted to that log, even if you unregister the source and attempt
+to register it to a different log.  If you want to change the log, you
+will have to change the source name.
+
+If you register a source to the Security log, informational events
+will be tagged as "Audit Success" and higher levels will be tagged as
+"Audit Failure".
+
+In order to use this feature, you must have
+L<Win32::EventLog::Message> installed.
 
 =item log_message
 
