@@ -1,9 +1,12 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
 0.12
-	- registration tests will be skipped if you are not
-	  logged in as an administrator
-	- registration will fail is user is not an admin user
+	- tweaked tests with respect to opening event log to verify events
+	- removed use of Win32::IsAdminUser function, since it does
+	  not seem to be universally available
+	- added warning in README about WinZip
+	- event source will only be registered if one is an admin user
+	- removed unnecessary tests
 	- updated POD and added Known Issues section
 	- corrected tests for registered sources (thanks to
           <fpchan at aol.com> for feedback on this)

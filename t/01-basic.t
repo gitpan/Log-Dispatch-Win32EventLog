@@ -4,10 +4,12 @@ use strict;
 
 use constant NUM_ROUNDS => 2;
 
-use Test::More tests => 8 + (6*NUM_ROUNDS);
+use Test::More tests => 7 + (6*NUM_ROUNDS);
+
+use Win32 0.23;
 
 BEGIN {
-  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
+#  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
 
   use_ok('Win32::EventLog');
   use_ok('Log::Dispatch');
@@ -46,6 +48,8 @@ sub get_last_event {
   }
 }
 
+open_log();
+
 my $dispatch = Log::Dispatch->new;
 ok( defined $dispatch, "new Log::Dispatch" );
 
@@ -53,9 +57,6 @@ $dispatch->add( Log::Dispatch::Win32EventLog->new(
   source => 'Win32EventLog test',
   min_level => 0, max_level => 7, name => 'test'
 ));
-
-open_log();
-
 
 my %Events = ( ); # track events that we logged
 my $time   = time();

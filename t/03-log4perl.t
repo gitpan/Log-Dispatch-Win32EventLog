@@ -4,10 +4,10 @@ use strict;
 
 use constant NUM_ROUNDS => 2;
 
-use Test::More tests => 6 + (6*NUM_ROUNDS);
+use Test::More tests => 5 + (6*NUM_ROUNDS);
 
 BEGIN {
-  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
+#  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
 
   use_ok('Win32::EventLog');
 }
@@ -57,6 +57,8 @@ SKIP: {
   skip "Log::Log4perl not found", 3+(6*NUM_ROUNDS)
     unless ($has_it);
 
+  open_log();
+
   my $config = qq{
 log4perl.logger.test               = INFO, EventLog
 
@@ -70,9 +72,6 @@ log4perl.appender.EventLog.Threshold = INFO
   my $log = Log::Log4perl->get_logger('test');
 
   ok( defined $log, "get_logger" );
-
-  open_log();
-
 
   my %Events = ( );		# track events that we logged
   my $time   = time();

@@ -4,12 +4,12 @@ use strict;
 
 use constant NUM_ROUNDS => 2;
 
-use Test::More tests => 8 + (6*NUM_ROUNDS);
+use Test::More tests => 7 + (6*NUM_ROUNDS);
 
-use Win32 ();
+use Win32 0.23;
 
 BEGIN {
-  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
+#  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
 
   use_ok('Win32::EventLog');
   use_ok('Log::Dispatch');
@@ -61,9 +61,11 @@ SKIP: {
   skip "Win32::EventLog::Message not found", 3+(6*NUM_ROUNDS)
     unless ($has_it);
 
-  skip "not logged in as an administration", 3+(6*NUM_ROUNDS)
-    unless (Win32::IsAdminUser());
+#   skip "not logged in as an administration", 3+(6*NUM_ROUNDS)
+#     unless (Win32::IsAdminUser());
   
+  open_log();
+
   my $dispatch = Log::Dispatch->new;
   ok( defined $dispatch, "new Log::Dispatch" );
 
@@ -78,8 +80,6 @@ SKIP: {
 #   my $config = { };
 #   skip "Registration failed", 2+(6*NUM_ROUNDS)
 #     unless (GetSource('System', 'Win32EventLog RegSrc Test', $config));
-
-  open_log();
 
 
   my %Events = ( );		# track events that we logged

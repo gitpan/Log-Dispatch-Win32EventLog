@@ -10,7 +10,6 @@ REQUIREMENTS
       Win32::EventLog
 
   Installation
-
     Installation is pretty standard:
 
       perl Makefile.PL
@@ -25,7 +24,12 @@ REQUIREMENTS
       perl Build test
       perl Build install
 
-    Note that the tests for this module will post to the event log!
+    Note that the tests for this module will post to the event log.
+
+    WARNING: WinZip is unable to use POSIX-style long pathnames in tar
+    files, so it may ignore the directory structure of this module's
+    distribution.  Alternate gzip and tar utilities can be found at
+    http://gnuwin32.sourceforge.net or http://unxutils.sourceforge.net
 
 SYNOPSIS
       use Log::Dispatch::Win32EventLog;
@@ -45,27 +49,21 @@ DESCRIPTION
     See the module documentation for more details.
 
 REVISION HISTORY
-    Changes since v0.02:
+    Changes since v0.10:
 
-    0.11 Fri Aug  6 2004
+    0.12
+	- tweaked tests with respect to opening event log to verify events
+	- removed use of Win32::IsAdminUser function, since it does
+	  not seem to be universally available
+	- added warning in README about WinZip
+	- event source will only be registered if one is an admin user
+	- removed unnecessary tests
+	- updated POD and added Known Issues section
+	- corrected tests for registered sources (thanks to
+          <fpchan at aol.com> for feedback on this)
+
+    0.11    Fri Aug  6 2004
 	- corrected handling of unregistered sources
-
-    0.10 Wed Aug  4 2004
-	- build uses Test::Warn
-	- added test for invalid log registration
-	- renamed test files
-	- added tests for registration and Log4perl (if present)
-	- allows registration of the source to a specific log
-	- tests verify that events were written to logs
-	- tests use Test::More
-	- event log is opened to $Source rather than "Application"
-	- checks for proper perl version
-	- handle is now closed when class is destroyed
-	- fixed warnings related to Perl 5.8.x [cpan #7020]
-	- check for invalid characters in source
-	- reorganized and updated POD
-	- added Build.PL and META.yml to distribution
-	- corrected prereqs in Build.PL/Makefile.PL
 
     A more detailed history can be found in the included Changes file.
 

@@ -6,7 +6,7 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.11_02';
+$VERSION = '0.11_04';
 
 $VERSION = eval $VERSION;
 
@@ -39,9 +39,14 @@ sub new {
     }
 
     if ($params{register}) {
-      unless (Win32::IsAdminUser) {
-	die "Admin user is required to register event sources";
-      }
+
+      # We want to use Win32::IsAdminUser to check if a user is an
+      # administrator, but this only appears to be available in Win32
+      # v0.23, with Perl 5.8.4.
+
+#       unless (Win32::IsAdminUser) {
+# 	  warn "Admin user is required to register event sources";
+#       }
 
       eval {
 	require Win32::EventLog::Message;
