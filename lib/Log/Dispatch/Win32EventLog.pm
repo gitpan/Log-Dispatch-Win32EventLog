@@ -6,7 +6,7 @@ use strict;
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.11_04';
+$VERSION = '0.11_05';
 
 $VERSION = eval $VERSION;
 
@@ -35,7 +35,8 @@ sub new {
     $self->{win32_log}    = "Application";
 
     if ($self->{win32_source} =~ /[\\]/) {
-      die "Invalid characters in source";
+      $self->{win32_source} =~ s/\\/_/g; # 
+      warn "Backslashes in source removed";
     }
 
     if ($params{register}) {
@@ -169,7 +170,9 @@ Same as various Log::Dispatch::* classes.
 This will be the source that the event is recorded from.  Usually this
 is the name of your application.
 
-The source should not contain any backslash characters.
+The source name should I<not> contain any backslash characters.  If it
+does, they will be changed to underscores and a warning will be
+issued.  This is due to a restriction of the NT Event Log.
 
 =item register
 
@@ -227,6 +230,16 @@ configuration file should have the following:
   log4perl.appender.EventLog.Threshold = INFO
 
 Replace MySourceName with the source name of your application.
+
+You can also use the log4j wrapper instead:
+
+  log4j.category.cat1                = INFO, myAppender
+
+  log4j.appender.myAppender          = org.apache.log4j.NTEventLogAppender
+  log4j.appender.myAppender.source   = MySourceName
+  log4j.appender.myAppender.layout   = org.apache.log4j.SimpleLayout
+
+See L<Log::Log4perl::JavaMap::NTEventLogAppender> for more information.
 
 =head1 KNOWN ISSUES
 

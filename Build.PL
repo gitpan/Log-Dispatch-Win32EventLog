@@ -23,7 +23,7 @@ my $build = Module::Build->new
        'Win32::EventLog'          => 0,
      },
      recommends => {
-       'Log::Log4perl'            => 0,
+       'Log::Log4perl'            => 0.28,
        'Win32::EventLog::Message' => 0,
      },
      build_requires => {

@@ -1,6 +1,10 @@
 Revision history for Perl extension Log::Dispatch::Win32EventLog.
 
 0.12
+	- added test for log4j.NTEventLogAppender interface
+	- if backslashes are in the source, it changes them to spaces and
+	  issues a warning rather than dying; message changed to
+	  'Backslashes in source removed'
 	- tweaked tests with respect to opening event log to verify events
 	- removed use of Win32::IsAdminUser function, since it does
 	  not seem to be universally available
