@@ -1,31 +1,18 @@
 --- #YAML:1.0
-name: Log-Dispatch-Win32EventLog
-version: 0.13
+name:                Log-Dispatch-Win32EventLog
+version:             0.14
+abstract:            Class for logging to the Windows NT Event Log
+license:             perl
+generated_by:        ExtUtils::MakeMaker version 6.36
+distribution_type:   module
+requires:     
+    Log::Dispatch:                 2.01
+    Params::Validate:              0
+    Test::Warn:                    0
+    Win32:                         0
+    Win32::EventLog:               0
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
+    version: 1.2
 author:
-  - ! >-
-    Robert Rothenberg <rrwo at cpan.org>, Arthur Bergman <abergman at cpan.org>
-    and Gunnar Hansson <gunnar at telefonplan.nu>
-abstract: Class for logging to the Windows NT Event Log
-license: perl
-requires:
-  Log::Dispatch: 2.01
-  Params::Validate: 0
-  Win32: 0
-  Win32::EventLog: 0
-  base: 0
-  perl: 5.005
-recommends:
-  Log::Log4perl: 0.28
-  Pod::Coverage: 0
-  Test::Pod: 1
-  Test::Prereq: 0
-  Win32: 0.23
-  Win32::EventLog::Message: 0
-build_requires:
-  Test::More: 0
-  Test::Warn: 0
-provides:
-  Log::Dispatch::Win32EventLog:
-    file: lib/Log/Dispatch/Win32EventLog.pm
-    version: 0.13
-generated_by: Module::Build version 0.2607
+    - David Landgren

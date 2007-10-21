@@ -1,5 +1,3 @@
-#-*- mode: perl;-*-
-
 use strict;
 
 use constant NUM_ROUNDS => 2;
@@ -7,13 +5,13 @@ use constant NUM_ROUNDS => 2;
 use Test::More tests => 5 + (6*NUM_ROUNDS);
 
 BEGIN {
-#  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
-
   use_ok('Win32::EventLog');
 }
 
-ok($Win32::EventLog::GetMessageText = 1,
-   "Set Win32::EventLog::GetMessageText");
+TODO: {
+    local $TODO = "Win32::EventLog::GetMessageText misbehaviour";
+    is($Win32::EventLog::GetMessageText, 1, "Set Win32::EventLog::GetMessageText");
+}
 
 my $hnd;
 
@@ -21,9 +19,11 @@ sub open_log {
   $hnd = new Win32::EventLog("Win32EventLog Log4perl Test", Win32::NodeName);
 }
 
-sub close_log {
-  if ($hnd) { $hnd->Close; }
-  $hnd = undef;
+END {
+  if ($hnd) {
+    $hnd->Close;
+    $hnd = undef;
+  }
 }
 
 sub get_number {
@@ -43,7 +43,6 @@ sub get_last_event {
     return;
   }
 }
-
 
 eval {
   require Log::Log4perl;
@@ -73,8 +72,9 @@ log4perl.appender.EventLog.Threshold = INFO
 
   ok( defined $log, "get_logger" );
 
-  my %Events = ( );		# track events that we logged
-  my $time   = time();
+  my %Events = ( );                # track events that we logged
+  my $time   = sub {sprintf '%04d%02d%02d%02d%02d%02d',
+    $_[5]+1900, $_[4]+1, reverse(@_[0..3])}->(localtime);
 
   # We run multiple rounds because we want to avoid checking passing the
   # tests based on previous run of this script.  That, combined with
@@ -89,48 +89,37 @@ log4perl.appender.EventLog.Threshold = INFO
     $Events{"error,$tag,$time"} = 1;
 
     my $cnt2 = get_number();
-    ok( $cnt2 > $cnt1 );
+    cmp_ok( $cnt2, '>=', $cnt1, "round $tag get 1" );
 
     $log->warn("warning,$tag,$time");
     $Events{"warning,$tag,$time"} = 1;
 
     $cnt1 = get_number();
-    ok( $cnt1 > $cnt2 );
+    cmp_ok( $cnt1, '>=', $cnt2, "round $tag get 1" );
 
     $log->info("info,$tag,$time");
     $Events{"info,$tag,$time"} = 1;
 
     $cnt2 = get_number();
-    ok( $cnt2 > $cnt1 );
+    cmp_ok( $cnt2, '>=', $cnt1, "round $tag get 1" );
   }
 
   {
-    ok( (keys %Events) == (3*NUM_ROUNDS) );
-
-    #  require YAML;
+    is( (keys %Events), (3*NUM_ROUNDS), "logged all events" );
 
     while ((keys %Events) && (my $event = get_last_event())) {
-
-      #    print STDERR YAML->Dump($event);
 
       my $string = $event->{Strings};
 
       if ( ($string =~ /(\w+)\,(\d+),(\d+)/) &&
-	   ($event->{Source} eq 'Win32EventLog Log4perl Test') ) {
-	if ( $3 == $time) {
-	  my $key = "$1,$2,$3";
-	  ok(delete $Events{$key});
-	}
+           ($event->{Source} eq 'Win32EventLog Log4perl Test') ) {
+        if ( $3 == $time) {
+          my $key = "$1,$2,$3";
+          ok(delete $Events{$key}, "removed $key");
+        }
 
       }
     }
-    ok( (keys %Events) == 0 );
+    is( (keys %Events), 0, "all events accounted for" );
   }
-
-
-  close_log();
-
-
 };
-
-

@@ -1,10 +1,9 @@
-Build.PL
 Changes
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 META.yml
 README
-SIGNATURE
 lib/Log/Dispatch/Win32EventLog.pm
 t/01-basic.t
 t/02-register.t
@@ -15,4 +14,3 @@ t/05-backslashes.t
 t/06-pod-coverage.t
 t/06-pod.t
 t/06-prereqs.t
-SIGNATURE    Added here by Module::Build

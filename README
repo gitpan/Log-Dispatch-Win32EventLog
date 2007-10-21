@@ -56,17 +56,14 @@ KNOWN ISSUES
 REVISION HISTORY
     Changes since the last public release:
 
-    0.13    Mon Apr  4 2005
-	- commented-out unnecessary eval
-	- added Pod::Coverage and Test::Pod tests
-	- added stub Test::Prereq (disabled due to bugs)
-	- minor updates to documentation
-	- 02-register.t test disabled due to bugs in register
-	- added SIGNATURE to distribution
+    0.14 2006-xx-xx
+        - removed SIGNATURE from the distribution
 
     A more detailed history can be found in the included Changes file.
 
 AUTHOR
+    David Landgren <dland at cpan.org> (current maintainer)
+
     Robert Rothenberg <rrwo at cpan.org>
 
     Arthur Bergman <abergman at cpan.org>

@@ -3,10 +3,11 @@ package Log::Dispatch::Win32EventLog;
 require 5.005;
 
 use strict;
+
 # use warnings; # 5.006 feature
 
 use vars qw($VERSION);
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 # $VERSION = eval $VERSION;
 
@@ -17,108 +18,115 @@ use Win32 ();
 use Win32::EventLog;
 
 use Params::Validate qw(validate SCALAR);
-Params::Validate::validation_options( allow_extra => 1);
+Params::Validate::validation_options( allow_extra => 1 );
 
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
 
-    my %params = validate(@_, {
-      source   => SCALAR,
-      register => 0,
-    });
+    my %params = validate(
+        @_,
+        {
+            source   => SCALAR,
+            register => 0,
+        }
+    );
 
     my $self = bless {}, $class;
     $self->_basic_init(%params);
-    
+
     $self->{win32_source} = $params{source};
     $self->{win32_log}    = "Application";
 
-    if ($self->{win32_source} =~ /[\\]/) {
-      $self->{win32_source} =~ s/\\/_/g; # 
-      warn "Backslashes in source removed";
+    if ( $self->{win32_source} =~ /[\\]/ ) {
+        $self->{win32_source} =~ s/\\/_/g;    #
+        warn "Backslashes in source removed";
     }
 
-    if ($params{register}) {
+    if ( $params{register} ) {
 
-      # We want to use Win32::IsAdminUser to check if a user is an
-      # administrator, but this only appears to be available in Win32
-      # v0.23, with Perl 5.8.4.
+        # We want to use Win32::IsAdminUser to check if a user is an
+        # administrator, but this only appears to be available in Win32
+        # v0.23, with Perl 5.8.4.
 
-#       unless (Win32::IsAdminUser) {
-# 	  warn "Admin user is required to register event sources";
-#       }
+        #       unless (Win32::IsAdminUser) {
+        #           warn "Admin user is required to register event sources";
+        #       }
 
-      eval {
-	require Win32::EventLog::Message;
-	import Win32::EventLog::Message;
+        eval {
+            require Win32::EventLog::Message;
+            import Win32::EventLog::Message;
 
-	my @log_list = ( );
-	GetEventLogList( Win32::NodeName, \@log_list );
-	my %log_hash = ( map { $_=>1 } @log_list );
+            my @log_list = ();
+            GetEventLogList( Win32::NodeName, \@log_list );
+            my %log_hash = ( map { $_ => 1 } @log_list );
 
-	if (exists $log_hash{$params{register}}) {
-	  Win32::EventLog::Message::RegisterSource(
-            $params{register}, $params{source}
-          );
-	  $self->{win32_register} = $params{register};
-	  $self->{win32_log}      = $params{source};
-	}
-	else {
-	  die "Invalid log";	  
-	}
-      };
-      if ($@) {
-	warn "Unable to register source to log $params{register}: $@";
-      }
+            if ( exists $log_hash{ $params{register} } ) {
+                Win32::EventLog::Message::RegisterSource( $params{register},
+                    $params{source} );
+                $self->{win32_register} = $params{register};
+                $self->{win32_log}      = $params{source};
+            }
+            else {
+                die "Invalid log";
+            }
+        };
+        if ($@) {
+            warn "Unable to register source to log $params{register}: $@";
+        }
     }
 
-    $self->{win32_handle} = Win32::EventLog->new(
-      $self->{win32_log}, Win32::NodeName
-    ) or die "Could not instaniate the event application";;
+    $self->{win32_handle} =
+      Win32::EventLog->new( $self->{win32_log}, Win32::NodeName )
+      or die "Could not instaniate the event application";
 
     return $self;
 }
 
 sub log_message {
-    my $self = shift;
+    my $self   = shift;
     my %params = @_;
 
-    my $level = $self->_level_as_number($params{level});
+    my $level = $self->_level_as_number( $params{level} );
 
-    if (($self->{win32_register}||"") eq 'Security') {
-      if($level > 2) {
-	$level = EVENTLOG_AUDIT_FAILURE;
-      } else {
-	$level = EVENTLOG_AUDIT_SUCCESS;
-      }
+    if ( ( $self->{win32_register} || "" ) eq 'Security' ) {
+        if ( $level > 2 ) {
+            $level = EVENTLOG_AUDIT_FAILURE;
+        }
+        else {
+            $level = EVENTLOG_AUDIT_SUCCESS;
+        }
     }
-    else {    
-      if($level > 3) {
-	$level = EVENTLOG_ERROR_TYPE;
-      } elsif($level > 2) {
-	$level = EVENTLOG_WARNING_TYPE;
-      } else {
-	$level = EVENTLOG_INFORMATION_TYPE;
-      }
+    else {
+        if ( $level > 3 ) {
+            $level = EVENTLOG_ERROR_TYPE;
+        }
+        elsif ( $level > 2 ) {
+            $level = EVENTLOG_WARNING_TYPE;
+        }
+        else {
+            $level = EVENTLOG_INFORMATION_TYPE;
+        }
     }
 
-    $self->{win32_handle}->Report( {
-	Computer  => Win32::NodeName,
-        EventID   => 0,
-        Category  => 0,
-        Source    => $self->{win32_source},
-	EventType => $level,
-	Strings   => $params{message} . "\0",
-        Data      => "",
-    });
+    $self->{win32_handle}->Report(
+        {
+            Computer  => Win32::NodeName,
+            EventID   => 0,
+            Category  => 0,
+            Source    => $self->{win32_source},
+            EventType => $level,
+            Strings   => $params{message} . "\0",
+            Data      => "",
+        }
+    );
 }
 
 sub DESTROY {
-  my $self = shift;
-  if ($self->{win32_handle}) {
-    $self->{win32_handle}->Close;
-  }
+    my $self = shift;
+    if ( $self->{win32_handle} ) {
+        $self->{win32_handle}->Close;
+    }
 }
 
 1;
@@ -127,6 +135,11 @@ __END__
 =head1 NAME
 
 Log::Dispatch::Win32EventLog - Class for logging to the Windows NT Event Log
+
+=head1 VERSION
+
+This document describes version 0.14 of Log::Dispatch::Win32EventLog, released
+2006-10-21.
 
 =head1 SYNOPSIS
 
@@ -285,9 +298,11 @@ the NT event log.
 
 =head1 AUTHOR
 
+David Landgren (current maintainer) E<lt>dland at cpan.orgE<gt>
+
 Robert Rothenberg E<lt>rrwo at cpan.orgE<gt>
 
-Arthur Bergman E<lt>abergman at cpan.orgE<gt>
+Artur Bergman E<lt>abergman at cpan.orgE<gt>
 
 Gunnar Hansson E<lt>gunnar at telefonplan.nuE<gt>
 

@@ -98,7 +98,7 @@ SKIP: {
 #     unless (GetSource('System', 'Win32EventLog RegSrc Test', $config));
 
 
-  my %Events = ( );		# track events that we logged
+  my %Events = ( );                # track events that we logged
   my $time   = time();
 
   # We run multiple rounds because we want to avoid checking passing the
@@ -141,11 +141,11 @@ SKIP: {
       my $string = $event->{Strings};
 
       if ( ($string =~ /(\w+)\,(\d+),(\d+)/) &&
-	   ($event->{Source} eq 'Win32EventLog RegSrc Test') ) {
-	if ( $3 == $time) {
-	  my $key = "$1,$2,$3";
-	  ok(delete $Events{$key}, "Found event $key");
-	}
+           ($event->{Source} eq 'Win32EventLog RegSrc Test') ) {
+        if ( $3 == $time) {
+          my $key = "$1,$2,$3";
+          ok(delete $Events{$key}, "Found event $key");
+        }
 
       }
     }

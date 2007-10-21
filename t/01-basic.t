@@ -1,39 +1,37 @@
-#-*- mode: perl;-*-
-
 use strict;
 
 use constant NUM_ROUNDS => 2;
 
-use Test::More tests => 7 + (6*NUM_ROUNDS);
+use Test::More tests => 8 + (7*NUM_ROUNDS);
 
 use Win32;
 
 BEGIN {
-#  ok( Win32::IsWinNT(), "Win32::IsWinNT?" );
-
   use_ok('Win32::EventLog');
   use_ok('Log::Dispatch');
   use_ok('Log::Dispatch::Win32EventLog');
 }
 
-ok($Win32::EventLog::GetMessageText = 1,
-   "Set Win32::EventLog::GetMessageText");
+$Win32::EventLog::GetMessageText = 1;
+is($Win32::EventLog::GetMessageText, 1, "Set Win32::EventLog::GetMessageText");
 
 my $hnd;
 
 sub open_log {
-  $hnd = new Win32::EventLog("Application", Win32::NodeName);
+  $hnd = Win32::EventLog->new("Application", Win32::NodeName);
 }
 
-sub close_log {
-  if ($hnd) { $hnd->Close; }
-  $hnd = undef;
+END {
+  if ($hnd) {
+    $hnd->Close;
+    $hnd = undef;
+  }
 }
 
 sub get_number {
   my $cnt = -1;
   $hnd->GetNumber($cnt);
-  return $cnt;
+  return 0+$cnt;
 }
 
 sub get_last_event {
@@ -43,7 +41,7 @@ sub get_last_event {
       EVENTLOG_SEQUENTIAL_READ(), 0, $event)) {
     return $event;
   } else {
-    print "\x23 WARNING: Unable to read event log\n";
+    diag("WARNING: Unable to read event log");
     return;
   }
 }
@@ -52,6 +50,7 @@ open_log();
 
 my $dispatch = Log::Dispatch->new;
 ok( defined $dispatch, "new Log::Dispatch" );
+is( ref($dispatch), 'Log::Dispatch', '... of the right type' );
 
 $dispatch->add( Log::Dispatch::Win32EventLog->new(
   source => 'Win32EventLog test',
@@ -59,7 +58,8 @@ $dispatch->add( Log::Dispatch::Win32EventLog->new(
 ));
 
 my %Events = ( ); # track events that we logged
-my $time   = time();
+my $time   = sub {sprintf '%04d%02d%02d%02d%02d%02d',
+    $_[5]+1900, $_[4]+1, reverse(@_[0..3])}->(localtime);
 
 # We run multiple rounds because we want to avoid checking passing the
 # tests based on previous run of this script.  That, combined with
@@ -68,25 +68,29 @@ my $time   = time();
 
 foreach my $tag (1..NUM_ROUNDS) {
 
-  my $cnt1 = get_number();
+  my $cnt1 = -1;
+  $hnd->GetNumber($cnt1);
 
-  $dispatch->log(level => 'emerg',   message => "emergency,$tag,$time");
+  $dispatch->log(level => 'emerg', message => "emergency,$tag,$time");
+  my $cnt2 = -1;
+  $hnd->GetNumber($cnt2);
+  isnt($cnt2, -1, "got an event number for emerg $tag");
+  cmp_ok( $cnt2, '>=', $cnt1, "emerg $tag" );
   $Events{"emergency,$tag,$time"} = 1;
-
-  my $cnt2 = get_number();
-  ok( $cnt2 > $cnt1 );
 
   $dispatch->log(level => 'warning', message => "warning,$tag,$time");
   $Events{"warning,$tag,$time"} = 1;
 
-  $cnt1 = get_number();
-  ok( $cnt1 > $cnt2 );
+  $cnt1 = -1;
+  $hnd->GetNumber($cnt1);
+  cmp_ok( $cnt2, '<=', $cnt1, "warning $tag" );
 
-  $dispatch->log(level =>'info',     message => "info,$tag,$time");
+  $dispatch->log(level =>'info', message => "info,$tag,$time");
   $Events{"info,$tag,$time"} = 1;
 
-  $cnt2 = get_number();
-  ok( $cnt2 > $cnt1 );
+  $cnt2 = -1;
+  $hnd->GetNumber($cnt2);
+  cmp_ok( $cnt2, '>=', $cnt1, "info $tag" );
 }
 
 {
@@ -101,16 +105,13 @@ foreach my $tag (1..NUM_ROUNDS) {
       my $string = $event->{Strings};
 
     if ( ($string =~ /(\w+)\,(\d+),(\d+)/) &&
-	 ($event->{Source} eq 'Win32EventLog test') ) {
+         ($event->{Source} eq 'Win32EventLog test') ) {
       if( $3 == $time) {
-	my $key = "$1,$2,$3";
-	ok(delete $Events{$key});
+        my $key = "$1,$2,$3";
+        ok(delete $Events{$key}, "drained event $key");
       }
     }
 
   }
-  ok( (keys %Events) == 0 );
+  is( (keys %Events), 0, "all events drained" );
 }
-
-
-close_log();
